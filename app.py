@@ -1,34 +1,35 @@
-from flask import Flask, request, render_template, send_file, Response
-from PIL import Image
-import io
+# app.py
+
+import os
+from flask import Flask, request, render_template
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
+app.config['UPLOAD_FOLDER'] = 'uploads'
+app.config['ALLOWED_EXTENSIONS'] = {'jpg', 'jpeg', 'png', 'gif'}
 
-@app.route('/', methods=['GET', 'POST'])
-def process_image():
-    if request.method == 'POST':
-        uploaded_image = request.files['file']
-        if uploaded_image:
-            try:
-                img = Image.open(uploaded_image)
-                img1 = img.resize((157, 121))
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
 
-                canvas_width = 1080
-                canvas_height = 720
-                canvas = Image.new('RGB', (canvas_width, canvas_height), 'white')
-                canvas.paste(img1, (716, 554))
+@app.route('/')
+def index():
+    return render_template('index.html')
 
-                output_buffer = io.BytesIO()
-                canvas.save(output_buffer, format='JPEG')
-                output_buffer.seek(0)
-
-                return Response(output_buffer, content_type='image/jpeg')
-            except Exception as e:
-                return "Error processing image: " + str(e)
-        else:
-            return "No file uploaded."
-
-    return render_template('upload.html')
+@app.route('/upload', methods=['POST'])
+def upload_image():
+    if 'file' not in request.files:
+        return "No file part"
+    file = request.files['file']
+    if file.filename == '':
+        return "No selected file"
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        return "File uploaded successfully"
+    else:
+        return "Invalid file format"
 
 if __name__ == '__main__':
+    if not os.path.exists(app.config['UPLOAD_FOLDER']):
+        os.makedirs(app.config['UPLOAD_FOLDER'])
     app.run(debug=True)
