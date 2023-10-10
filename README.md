@@ -1,2 +1,2 @@
 # CannyMaskResizer
-http://username.github.io/CannyMaskResizer
+http://jordain.github.io/CannyMaskResizer
