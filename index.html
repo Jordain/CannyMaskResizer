@@ -1,13 +1,43 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Image Uploader</title>
+    <title>Image Upload and Display</title>
 </head>
 <body>
-    <h1>Upload an Image</h1>
-    <form action="/upload" method="POST" enctype="multipart/form-data">
-        <input type="file" name="file">
-        <input type="submit" value="Upload">
-    </form>
+    <canvas id="canvas" width="1080" height="720" style="border: 1px solid black;"></canvas>
+    <input type="file" id="imageInput">
+    
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const imageInput = document.getElementById('imageInput');
+        const img = new Image();
+        
+        // Listen for file input changes
+        imageInput.addEventListener('change', handleImageUpload);
+
+        function handleImageUpload(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    img.onload = function() {
+                        // Clear the canvas
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);
+                        
+                        // Draw the image at specified coordinates and scale
+                        ctx.drawImage(img, 600, 700, 300, 50); // 600x700 position, 300x50 dimensions
+
+                        // You can add more drawImage lines for additional images and positions.
+
+                    };
+
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+    </script>
 </body>
 </html>
