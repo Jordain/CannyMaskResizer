@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, send_file
+from flask import Flask, request, render_template, send_file, Response
 from PIL import Image
 import io
 
@@ -22,7 +22,7 @@ def process_image():
                 canvas.save(output_buffer, format='JPEG')
                 output_buffer.seek(0)
 
-                return send_file(output_buffer, as_attachment=True, download_name='output_canvas.jpg')
+                return Response(output_buffer, content_type='image/jpeg')
             except Exception as e:
                 return "Error processing image: " + str(e)
         else:
