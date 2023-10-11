@@ -6,17 +6,33 @@
 <body>
     <h1>Image Upload and Display</h1>
     <p>Upload your mask here to resize and position for the pumpkin contest. Follow the tutorial here on how to use this. </p>
-    <canvas id="canvas" width="1080" height="720" style="background-color: white; border: 1px solid black;"></canvas>
+    <canvas id="canvas" width="1080" height="720" style="border: 1px solid black;"></canvas>
     <input type="file" id="imageInput">
+    <label for="xPosition">X Position:</label>
+    <input type="number" id="xPosition" value="716">
+    <label for="yPosition">Y Position:</label>
+    <input type="number" id="yPosition" value="554">
+    <label for="width">Width:</label>
+    <input type="number" id="width" value="157">
+    <label for="height">Height:</label>
+    <input type="number" id="height" value="121">
     
     <script>
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
         const imageInput = document.getElementById('imageInput');
         const img = new Image();
+        const xPositionInput = document.getElementById('xPosition');
+        const yPositionInput = document.getElementById('yPosition');
+        const widthInput = document.getElementById('width');
+        const heightInput = document.getElementById('height');
         
         // Listen for file input changes
         imageInput.addEventListener('change', handleImageUpload);
+        xPositionInput.addEventListener('input', redrawImage);
+        yPositionInput.addEventListener('input', redrawImage);
+        widthInput.addEventListener('input', redrawImage);
+        heightInput.addEventListener('input', redrawImage);
 
         function handleImageUpload(e) {
             const file = e.target.files[0];
@@ -25,22 +41,30 @@
 
                 reader.onload = function(e) {
                     img.onload = function() {
-                        // Clear the canvas
-                        ctx.clearRect(0, 0, canvas.width, canvas.height);
-                        // Set the canvas background to white
-                        ctx.fillStyle = 'white';
-                        ctx.fillRect(0, 0, canvas.width, canvas.height);
-                        // Draw the image at specified coordinates and scale
-                        ctx.drawImage(img, 716, 554, 157, 121); // 600x700 position, 300x50 dimensions
-                        
-                        // You can add more drawImage lines for additional images and positions.
-
+                        redrawImage();
                     };
 
                     img.src = e.target.result;
                 };
                 reader.readAsDataURL(file);
             }
+        }
+
+        function redrawImage() {
+            // Clear the canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Set the canvas background to white
+            ctx.fillStyle = 'white';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw the image at user-defined coordinates and scale
+            const x = parseInt(xPositionInput.value, 10);
+            const y = parseInt(yPositionInput.value, 10);
+            const width = parseInt(widthInput.value, 10);
+            const height = parseInt(heightInput.value, 10);
+
+            ctx.drawImage(img, x, y, width, height);
         }
     </script>
 </body>
